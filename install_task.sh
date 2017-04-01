@@ -16,12 +16,23 @@ echo "------"
 echo "Adding the following lines to /etc/rc.local:"
 echo "${LINE}"
 echo "${LINE2}"
+echo "------"
 
 # This should only create a .bak if it finds a result.
-sed -i.bak "s'exit 0''" /etc/rc.local
-echo "${LINE}" >> /etc/rc.local
-echo "${LINE2}" >> /etc/rc.local
+sed -i.bak "s'exit 0.*''" /etc/rc.local
+
+# check if the lines are already there
+for L in "${LINE}" "${LINE2}"
+do
+	# if the line is already there, don't add it.
+	echo "Is line already there? Count:"
+	echo "$(grep -c "${L}" /etc/rc.local)"
+	if [[ "$(grep -c "${L}" /etc/rc.local)" == "0" ]]; then
+		echo "${L}" >> /etc/rc.local
+	fi
+done
 
 echo "------"
 echo "New /etc/rc.local:"
 cat /etc/rc.local
+echo "------"
